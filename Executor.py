@@ -1,4 +1,6 @@
 from collections import OrderedDict
+import itertools
+
 
 
 class ExecutorMeta(type):
@@ -28,6 +30,10 @@ class ExecutorMeta(type):
 
         return newClass
 
+    def __init__(cls, name, bases, attrs):
+        super().__init__(name, bases, attrs)
+        cls._ids = itertools.count(1)
+
 
 class Executor(list, metaclass=ExecutorMeta):
     """
@@ -40,7 +46,9 @@ class Executor(list, metaclass=ExecutorMeta):
     name = "Executor"
     _Executor = True
 
-
+    def __init__(self):
+        self.id = next(self.__class__._ids)
+        print("Count:", self.id)
 
     def task(func):
         """
@@ -48,7 +56,7 @@ class Executor(list, metaclass=ExecutorMeta):
 
         :return: wrapped function with _filter attribute set to true
         """
-        # todo add test for return type
+
         func._task = True
         return func
 
